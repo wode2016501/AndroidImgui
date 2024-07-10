@@ -11,6 +11,7 @@ void usleep(int);
 int read(int a,char *b,int c);
 int lseek(int a,int b,int c);  
 }
+int count=500;
 int main() {
     auto display = android::ANativeWindowCreator::GetDisplayInfo();
     if (display.height > display.width) {
@@ -40,6 +41,9 @@ int main() {
     }
 #endif 
     char mappedData[20]; 
+    float  samples[count];
+    char *p=mappedData+5;
+    memset(samples,0,count*sizeof(float)); 
     while (flag) {
         graphics->NewFrame();
     //    Touch::setOrientation(android::ANativeWindowCreator::GetDisplayInfo().orientation);
@@ -50,16 +54,25 @@ int main() {
            // ImGui::Image(image->DS, {100, 100});
         }
 #endif
-	ImGui::SetNextWindowSize({120, 1}, ImGuiCond_Once);
+	ImGui::SetNextWindowSize({450, 100}, ImGuiCond_Once);
         ImGui::Begin("My Window", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 	ImVec4 redColor = { 0.5f, 0.5f, 0.5f, 0.5f };  //灰色透明
 	ImGui::PushStyleColor(ImGuiCol_WindowBg, redColor);
-	read(fd,mappedData,8); 
+	read(fd,mappedData,9); 
 	lseek(fd, 0, 0); 
-	mappedData[8]=0;
-	//printf("%s\n",mappedData); 
-	ImGui::Text("%s",mappedData); 
-	usleep(100000); 
+	mappedData[9]=0;
+	samples[count-1]=(float) atoi(p);
+	
+
+	for (int i = 0; i < count-1; i++)
+		samples[i]=samples[i+1]; 
+//	ImGui::Text("%f",samples[99]);
+//	printf("%f,%f,%f\n",samples[97],samples[98],samples[99]); 
+	//float samples[1000];
+	//for (int n = 0; n < 1000; n++)
+		//samples[n] = sinf(n * 0.2f + ImGui::GetTime() * 1.5f);
+	ImGui::PlotLines(mappedData, samples, count);
+	usleep(50000); 
         ImGui::End();
         graphics->EndFrame();
     }
