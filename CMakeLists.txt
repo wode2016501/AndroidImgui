@@ -48,7 +48,12 @@ target_link_libraries(AndroidImgui
         EGL
         GLESv3
         z)
+add_executable(fps
+        test/fps.cpp
+        test/TouchHelperA.cpp)
 
+target_link_libraries(fps
+        AndroidImgui)
 
 #[[add_executable(AndroidImguiTest
         test/main.cpp
